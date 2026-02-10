@@ -77,6 +77,7 @@ export class ProcessSupervisor {
       cwd,
       detached: true,
       stdio: ["ignore", stdoutFd, stderrFd],
+      ...(process.platform === "win32" ? { shell: true } : {}),
     });
 
     // Close file descriptors in parent process (child inherits them)

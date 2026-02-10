@@ -80,6 +80,7 @@ if (isTestMode) {
   dispatcher.registerHandler(
     "ralph.run",
     createRalphTaskHandler({
+      command: RALPH_CLI_PATH,
       defaultCwd: CWD,
       baseArgs: ["run", "--no-tui"], // Disable TUI for streaming output to WebSocket
     })
