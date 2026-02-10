@@ -1,4 +1,4 @@
-# Ralph-Coordinator User Guide (v1.1)
+# Ralph-Coordinator (v2.0)
 
 **Welcome to the Ralph-Coordinator.**
 
@@ -23,7 +23,7 @@ We have cherry-picked the specific architectural breakthroughs from each predece
 ## 2. The Core Workflow: The "Captain" Method ⚓
 
 ### Step 0: The "Handshake" (Architect Phase)
-**Logic:** `state.PlanManager().initialize_project(intent)`
+**Logic:** `state.PlanManager().initialize_from_intent(intent)`
 1.  Provide a raw goal (e.g., "Build a dashboard").
 2.  Ralph generates `PRD.md` (What), `ARCHITECTURE.md` (How), and `plan.md` (Tasks).
 
@@ -99,6 +99,24 @@ If Ralph hits ambiguity (Ambiguity Trap) or fails retries, he will pause and wri
 
 ### Data Flow
 `User Intent` → `Architect` → `plan.md` → `Developer/Designer` → `Referee (Tests/Vision)` → `Git Commit` → `IDE Badge/Dashboard`.
+
+---
+
+## 6. Appendix: System Evolution (The "Frankenstein" History) 🧟
+
+Ralph-Coordinator is the culmination of five experimental architectures:
+
+1.  **BMAD-METHOD**: Provided the "Waterfall" Planning protocol (Product Owner -> Architect -> Tech Lead).
+2.  **Conductor**: Provided the `plan.md` "Markdown-as-Database" state persistence.
+3.  **Ralph-Orchestrator**: Provided the "Hats" (Context Hygiene) and Node.js Dashboard.
+4.  **Gemini-Ralph-Loop**: Provided the raw "Micro-Ratchet" (Code -> Test -> Fix).
+5.  **Ralph-Commander**: Provided the "Auto-Approval" gate logic.
+
+**Why this matters:**
+Unlike previous versions that were either "All Talk" (Planning-heavy) or "All Action" (Loop-heavy), this Coordinator enforces a rigid **"Handshake"**:
+- The **Brain** (Python) creates the Plan.
+- The **Body** (Node.js) executes the Loop.
+- The **Hands** (Git) rate-limit the chaos.
 
 ---
 *"Ship working code while you sleep."*
