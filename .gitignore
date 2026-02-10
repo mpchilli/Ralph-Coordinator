@@ -63,7 +63,7 @@ IMPLEMENTATION_PLAN.md
 # Ralph specific
 .sop/
 .logs/
-prompts/
+
 prompts/archive/
 ralph_*.log
 ralph_metrics_*.json
