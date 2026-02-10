@@ -2,3 +2,4 @@ google-generativeai
 playwright
 pyyaml
 colorama
+Pillow

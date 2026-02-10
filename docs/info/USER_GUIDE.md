@@ -1,147 +1,99 @@
-# Ralph-Coordinator User Guide (v1.0)
+# Ralph-Coordinator User Guide (v1.1)
 
 **Welcome to the Ralph-Coordinator.**
 
-This system is a **Hybrid Consolidator** that implements the "Frankenstein" architecture described in the [Historic Analysis](file:///c:/Users/ukchim01/Downloads/Ai%20Tools/Ralph-Coordinator/docs/prompts/00_prior_conversation_history.md). It combines the best features of five different AI workflows into a "Software Factory."
+This system is a **Hybrid Consolidator** that implements the "Frankenstein" architecture—combining the best features of five AI workflows into a "Software Factory."
 
 ---
 
-## 1. Theory of Operation (The "Frankenstein" Architecture)
+## 1. Theory of Operation
 
 We have cherry-picked the specific architectural breakthroughs from each predecessor:
 
-| Source | Feature Adopted | Why? |
+| Source | Breakthrough | Why? |
 | :--- | :--- | :--- |
-| **BMAD-METHOD** | **The "Architect's Brain"** | Solves the "Blank Page Problem" by forcing a high-fidelity PRD/Spec before coding. |
-| **Conductor** | **The "System of Record"** | Uses `plan.md` as a crash-proof database. If the system dies, it resumes from the last unchecked box. |
-| **Ralph-Orchestrator** | **The "Managed Runtime"** | Uses "Hats" (Personas) and a Node.js Dashboard to manage the lifecycle and visualization. |
-| **Ralph-Loop** | **The "Micro-Ratchet"** | The `while(true)` loop that commits *only* on green tests (`Code -> Test -> Commit` or `Reset`). |
-| **Commander** | **The "Auto-Approval"** | Replaces human "OK" clicks with automated test verification for velocity. |
+| **BMAD-METHOD** | **Architect's Brain** | Solves the "Blank Page Problem" with high-fidelity PRDs/Specs. |
+| **Conductor** | **System of Record** | Uses `plan.md` as a crash-proof database. |
+| **Ralph-Orchestrator**| **Managed Runtime** | Persona-based "Hats" and Node.js Dashboard visualization. |
+| **Ralph-Loop** | **Micro-Ratchet** | Atomic `Code -> Test -> Commit` loop. |
+| **Commander** | **Auto-Approval** | Replaces human confirmation with automated test verification. |
 
 ---
 
 ## 2. The Core Workflow: The "Captain" Method ⚓
 
-### Step 0: The "Handshake" (Input Fidelity)
-**Context:** Generate your specifications using a high-level reasoning model or BMAD.
-1.  Save `PRD.md` and `ARCHITECTURE.md` in the root.
-2.  Ralph reads these to ground its "Planner Hat".
+### Step 0: The "Handshake" (Architect Phase)
+**Logic:** `state.PlanManager().initialize_project(intent)`
+1.  Provide a raw goal (e.g., "Build a dashboard").
+2.  Ralph generates `PRD.md` (What), `ARCHITECTURE.md` (How), and `plan.md` (Tasks).
 
 ### Step 1: The Plan (State Persistence)
-**Context:** The Coordinator parses your input into a **`plan.md`** checklist.
-*   **Behavior:** This file is the **Database**.
-*   **Pause/Resume:** Kill the terminal to pause. Run `npm start` to resume from the first `[ ]`.
+**File:** `plan.md`
+*   **Database:** This file tracks every task.
+*   **Resume:** Run `npm start`. Ralph scans for the first `[ ]` and continues.
 
 ### Step 2: The Micro-Ratchet (Execution)
-**Context:** The **Python Coordinator** (`coordinator/loop.py`) operates the feedback loop:
-1.  **Lock:** Acquires `coordinator.lock`.
-2.  **Generate:** The "Builder Hat" writes code.
-3.  **Verify:** The "Referee" runs the gatekeeper command (e.g., `npm test`).
-    *   **PASS:** Triggers **Auto-Approval**. (`git commit`, check `[x]`).
-    *   **FAIL:** Triggers **Self-Correction**. (Feed error -> Retry -> `git reset` if stuck).
+**Logic:** `coordinator/loop.py`
+1.  **Lock:** Acquires `coordinator.lock` for process safety.
+2.  **Hat Selection:** Parses task tags (e.g., `[Backend]`, `[UI]`) to load role-specific system prompts.
+3.  **Verify:** Runs `npm test` (or vision analysis for UI).
+    *   **PASS:** Git commit and check `[x]` in `plan.md`.
+    *   **FAIL:** Reverts (`git reset --hard`) and retries up to 5 times.
 
-### Step 3: Visibility (The Captain's Badge) 🛡️
-**Context:** Real-time monitoring without switching windows.
-1.  Open `.ralph-status.md` in VS Code.
-2.  Toggle **Markdown Preview** (`Ctrl+Shift+V`).
-3.  **Heads-Up Display:** This file updates in real-time with the current Loop Status, Token Usage, and Task ID.
+### Step 3: Steering (Captain Consultation) 🧭
+**File:** `.ralph-captain-response.md`
+If Ralph fails multiple retries or hits ambiguity, he will pause and write a prompt to `.ralph-captain-prompt.md`. 
+*   **Action:** Write your instructions in `.ralph-captain-response.md` and save.
+*   **Result:** Ralph reads your guidance and applies it to the next retry.
 
-### Step 4: Visualizing (The Dashboard)
-**Context:** Deep inspection.
-*   The **Electron App** is the primary visualizer.
-*   It polls `dashboard_state.json` to show live logs and "Hat" state.
+### Step 4: Visibility (HUD & Dashboard) 🛡️
+1.  **The Badge:** Open `.ralph-status.md` in VS Code Markdown Preview for a live Heads-Up Display of tokens, cost, and task status.
+2.  **The Dashboard:** Launch the Electron app for the full multi-process monitor.
 
 ---
 
-## 3. The "Designer" Workflow (UI/UX Mode) 🎨
+## 3. The "Designer" Workflow (Vision Mode) 🎨
 
-**Context:** Ralph isn't just a coder; he is a designer with vision capabilities.
-
-### Triggers
-Add a task with the **`[UI]`** tag in your `plan.md`:
-```markdown
-- [ ] [UI] Style the login button with a glassmorphism effect
-```
+**Trigger:** Add the **`[UI]`** tag to a task in `plan.md`.
 
 ### Behavior
-1.  **Hat Switch:** The Agent switches to the **Designer Hat**.
-2.  **Visual Feedback Loop:**
-    *   Writes CSS/React code.
-    *   Launches the app locally via Playwright.
-    *   **Takes a Screenshot.**
-    *   Compares the screenshot to the request using the `vision` model (Gemini Pro Vision).
-3.  **Commit:** Only commits if the visual diff matches the "Premium Aesthetic" requirements.
+1.  **Execution:** Agent writes CSS/React code.
+2.  **Vision Loop:**
+    *   Launches Playwright headless.
+    *   Captures a full-page screenshot to `.ralph/screenshots/`.
+    *   Calls the **Vision Model** (`gemini-2.0-flash-exp`) to compare the render against the task description.
+3.  **Judgment:** Only commits if the visual review results in a `PASS`.
 
 ---
 
-## 4. Installation & Startup
+## 4. Setup & Operations
 
 ### Prerequisites
-*   **Node.js v20+**
-*   **Python 3.10+** (Added to PATH)
-*   **Playwright:** `playwright install`
+*   Node.js v20+, Python 3.10+, Git, Playwright (`playwright install`).
 
-### Bootstrap Sequence
-1.  **Inject the Brain:** `python upgrade_ralph.py`
-2.  **Hydrate:**
-    ```bash
-    python -m venv venv
-    .\venv\Scripts\activate
-    pip install -r requirements.txt
-    ```
-3.  **Awaken:**
-    ```bash
-    npm install
-    npm start  # Runs Backend + Frontend + Electron
-    ```
-
-**Note:** The `ralph` command in the terminal now talks directly to the **Python Bridge**. Legacy Node.js commands (like `hats`) are accessed via the Dashboard or `npm run Ralph:legacy`.
+### Commands
+| Goal | Command |
+| :--- | :--- |
+| **Start Everything** | `npm start` |
+| **Inject Brain** | `python upgrade_ralph.py` |
+| **Hydrate Env** | `pip install -r requirements.txt` |
+| **Legacy Tools** | `npm run legacy -- <args>` |
 
 ---
 
-## 5. Configuration
-
-### `coordinator/config.yaml` (The Brain) 🧠
-Controls Intelligence and Safety.
-
-```yaml
-system:
-  mode: "hybrid"
-  budget_max_usd: 5.00
-
-models:
-  planner: "gemini-2.0-pro-exp-02-05"    # Architect
-  executor: "gemini-2.5-flash-preview-09-25" # Builder
-  vision: "gemini-2.0-flash-exp"         # Designer
-
-security:
-  allowlist: ["git", "npm", "node", "python", "ls"]
-```
-
----
-
-## 6. System Architecture for Builders 🧬
-
-For AIs replicating this system, here is the spec:
+## 5. System Architecture for Builders 🧬
 
 ### File Tree
-*   **`coordinator/`**: The Python Brain.
-    *   `loop.py`: The Main Event Loop (Micro-Ratchet).
-    *   `safety.py`: The Referee (Path/Command validation).
-    *   `state.py`: The State Manager (update `plan.md` & `dashboard_state.json`).
-*   **`templates/`**: The Skills & Roles.
-    *   `roles/*.md`: Persona definitions (Architect, Developer, Designer).
-*   **`dist/`**: Compiled Electron/React assets.
+*   **`coordinator/`**: The Python Core.
+    *   `llm.py`: API Client (Text/Vision) + Budget tracking.
+    *   `loop.py`: Micro-Ratchet Engine & Hat Selection.
+    *   `safety.py`: The Referee & IDE Badge generator.
+    *   `state.py`: Plan parser & Architect Phase logic.
+*   **`templates/roles/`**: Markdown-based system prompts for Personas.
+*   **`PRD.md` / `ARCHITECTURE.md`**: Derived sources of truth.
 
 ### Data Flow
-1.  **Read:** `loop.py` reads `plan.md` (Objective).
-2.  **Think:** Sends context to Gemini.
-3.  **Act:** Executes command via `safety.py`.
-4.  **Write:**
-    *   Updates `plan.md` (Progress).
-    *   Updates `.ralph-status.md` (Badge).
-    *   Updates `dashboard_state.json` (UI).
-5.  **Render:** Electron reads JSON and updates the progress bar.
+`User Intent` → `Architect` → `plan.md` → `Developer/Designer` → `Referee (Tests/Vision)` → `Git Commit` → `IDE Badge/Dashboard`.
 
 ---
 *"Ship working code while you sleep."*
