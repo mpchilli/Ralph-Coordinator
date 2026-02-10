@@ -1,161 +1,104 @@
-<!-- 2026-01-28 -->
-# Ralph Orchestrator
+# Ralph-Coordinator User Guide (v1.1)
 
-[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.75+-orange)](https://www.rust-lang.org/)
-[![Build](https://img.shields.io/github/actions/workflow/status/mikeyobrien/ralph-orchestrator/ci.yml?branch=main&label=CI)](https://github.com/mikeyobrien/ralph-orchestrator/actions)
-[![Coverage](https://img.shields.io/badge/coverage-65%25-yellowgreen)](coverage/index.html)
-[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://mikeyobrien.github.io/ralph-orchestrator/)
+**Welcome to the Ralph-Coordinator.**
 
-A hat-based orchestration framework that keeps AI agents in a loop until the task is done.
-
-> "Me fail English? That's unpossible!" - Ralph Wiggum
-
-**[Documentation](https://mikeyobrien.github.io/ralph-orchestrator/)** | **[Getting Started](https://mikeyobrien.github.io/ralph-orchestrator/getting-started/quick-start/)** | **[Presets](https://mikeyobrien.github.io/ralph-orchestrator/guide/presets/)**
-
-## Installation
-
-### Via npm (Recommended)
-
-```bash
-npm install -g @ralph-orchestrator/ralph-cli
-```
-
-### Via Homebrew (macOS)
-
-```bash
-brew install ralph-orchestrator
-```
-
-### Via Cargo
-
-```bash
-cargo install ralph-cli
-```
-
-## Quick Start
-
-```bash
-# 1. Initialize Ralph with your preferred backend
-ralph init --backend claude
-
-# 2. Plan your feature (interactive PDD session)
-ralph plan "Add user authentication with JWT"
-# Creates: specs/user-authentication/requirements.md, design.md, implementation-plan.md
-
-# 3. Implement the feature
-ralph run -p "Implement the feature in specs/user-authentication/"
-```
-
-Ralph iterates until it outputs `LOOP_COMPLETE` or hits the iteration limit.
-
-For simpler tasks, skip planning and run directly:
-
-```bash
-ralph run -p "Add input validation to the /users endpoint"
-```
-
-## Web Dashboard (Alpha)
-
-> **Alpha:** The web dashboard is under active development. Expect rough edges and breaking changes.
-
-<img width="1513" height="1128" alt="image" src="https://github.com/user-attachments/assets/ce5f072f-3d81-44d8-8f2f-88b42b33a3be" />
-
-Ralph includes a web dashboard for monitoring and managing orchestration loops.
-
-```bash
-ralph web                              # starts both servers + opens browser
-ralph web --no-open                    # skip browser auto-open
-ralph web --backend-port 4000          # custom backend port
-ralph web --frontend-port 8080         # custom frontend port
-```
-
-**Requirements:** Node.js >= 18 and npm. On first run, `ralph web` will auto-detect missing `node_modules` and run `npm install` for you.
-
-To set up Node.js:
-
-```bash
-# Option 1: nvm (recommended)
-nvm install    # reads .nvmrc
-
-# Option 2: direct install
-# https://nodejs.org/
-```
-
-For development:
-
-```bash
-npm install          # install dependencies
-npm run dev          # run both servers (backend:3000, frontend:5173)
-npm run test:server  # backend tests
-npm run test         # all tests
-```
-
-## What is Ralph?
-
-Ralph implements the [Ralph Wiggum technique](https://ghuntley.com/ralph/) — autonomous task completion through continuous iteration. It supports:
-
-- **Multi-Backend Support** — Claude Code, Kiro, Gemini CLI, Codex, Amp, Copilot CLI, OpenCode
-- **Hat System** — Specialized personas coordinating through events
-- **Backpressure** — Gates that reject incomplete work (tests, lint, typecheck)
-- **Memories & Tasks** — Persistent learning and runtime work tracking
-- **31 Presets** — TDD, spec-driven, debugging, and more
-
-## RObot (Human-in-the-Loop)
-
-Ralph supports human interaction during orchestration via Telegram. Agents can ask questions and block until answered; humans can send proactive guidance at any time.
-
-Quick onboarding (Telegram):
-
-```bash
-ralph bot onboard --telegram   # guided setup (token + chat id)
-ralph bot status               # verify config
-ralph bot test                 # send a test message
-ralph run -c ralph.bot.yml -p  "Help the human"
-```
-
-```yaml
-# ralph.yml
-RObot:
-  enabled: true
-  telegram:
-    bot_token: "your-token"  # Or RALPH_TELEGRAM_BOT_TOKEN env var
-```
-
-- **Agent questions** — Agents emit `human.interact` events; the loop blocks until a response arrives or times out
-- **Proactive guidance** — Send messages anytime to steer the agent mid-loop
-- **Parallel loop routing** — Messages route via reply-to, `@loop-id` prefix, or default to primary
-- **Telegram commands** — `/status`, `/tasks`, `/restart` for real-time loop visibility
-
-See the [Telegram guide](https://mikeyobrien.github.io/ralph-orchestrator/guide/telegram/) for setup instructions.
-
-## Documentation
-
-Full documentation is available at **[mikeyobrien.github.io/ralph-orchestrator](https://mikeyobrien.github.io/ralph-orchestrator/)**:
-
-- [Installation](https://mikeyobrien.github.io/ralph-orchestrator/getting-started/installation/)
-- [Quick Start](https://mikeyobrien.github.io/ralph-orchestrator/getting-started/quick-start/)
-- [Configuration](https://mikeyobrien.github.io/ralph-orchestrator/guide/configuration/)
-- [CLI Reference](https://mikeyobrien.github.io/ralph-orchestrator/guide/cli-reference/)
-- [Presets](https://mikeyobrien.github.io/ralph-orchestrator/guide/presets/)
-- [Concepts: Hats & Events](https://mikeyobrien.github.io/ralph-orchestrator/concepts/hats-and-events/)
-- [Architecture](https://mikeyobrien.github.io/ralph-orchestrator/advanced/architecture/)
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
-
-## License
-
-MIT License — See [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-- **[Geoffrey Huntley](https://ghuntley.com/ralph/)** — Creator of the Ralph Wiggum technique
-- **[Strands Agents SOP](https://github.com/strands-agents/agent-sop)** — Agent SOP framework
-- **[ratatui](https://ratatui.rs/)** — Terminal UI framework
+This system is a **Hybrid Consolidator** that implements the "Frankenstein" architecture—combining the best features of five AI workflows into a "Software Factory."
 
 ---
 
-*"I'm learnding!" - Ralph Wiggum*
+## 1. Theory of Operation
+
+We have cherry-picked the specific architectural breakthroughs from each predecessor:
+
+| Source | Breakthrough | Why? |
+| :--- | :--- | :--- |
+| **BMAD-METHOD** | **Architect's Brain** | Solves the "Blank Page Problem" with high-fidelity PRDs/Specs. |
+| **Conductor** | **System of Record** | Uses `plan.md` as a crash-proof database. |
+| **Ralph-Orchestrator**| **Managed Runtime** | Persona-based "Hats" and Node.js Dashboard visualization. |
+| **Ralph-Loop** | **Micro-Ratchet** | Atomic `Code -> Test -> Commit` loop. |
+| **Commander** | **Auto-Approval** | Replaces human confirmation with automated test verification. |
+
+---
+
+## 2. The Core Workflow: The "Captain" Method ⚓
+
+### Step 0: The "Handshake" (Architect Phase)
+**Logic:** `state.PlanManager().initialize_project(intent)`
+1.  Provide a raw goal (e.g., "Build a dashboard").
+2.  Ralph generates `PRD.md` (What), `ARCHITECTURE.md` (How), and `plan.md` (Tasks).
+
+### Step 1: The Plan (State Persistence)
+**File:** `plan.md`
+*   **Database:** This file tracks every task.
+*   **Resume:** Run `npm start`. Ralph scans for the first `[ ]` and continues.
+
+### Step 2: The Micro-Ratchet (Execution)
+**Logic:** `coordinator/loop.py`
+1.  **Lock:** Acquires `coordinator.lock` for process safety.
+2.  **Hat Selection:** Parses task tags (e.g., `[Backend]`, `[UI]`) to load role-specific system prompts.
+3.  **Strict TDD Loop:**
+    *   **Phase 1 (Red):** Write a failing test.
+    *   **Phase 2 (Green):** Write implementation code to pass the test.
+    *   **Phase 3 (Refactor):** Cleanup and commit.
+4.  **Verify:** Runs `npm test` (or vision analysis for UI).
+    *   **PASS:** Git commit and check `[x]` in `plan.md`.
+    *   **FAIL:** Reverts (`git reset --hard`) and retries up to 3 times.
+
+### Step 3: Steering (Captain Consultation) 🧭
+**File:** `.ralph-captain-response.md`
+If Ralph hits ambiguity (Ambiguity Trap) or fails retries, he will pause and write a prompt to `.ralph-captain-prompt.md`.
+*   **Ambiguity Trap:** If requirements are vague, Ralph outputs a JSON menu of options. Select one or write custom guidance.
+*   **Action:** Write your instructions in `.ralph-captain-response.md` and save.
+*   **Result:** Ralph reads your guidance and applies it to the next retry.
+
+### Step 4: Visibility (HUD & Dashboard) 🛡️
+1.  **The Badge:** Open `.ralph-status.md` in VS Code Markdown Preview for a live Heads-Up Display of tokens, cost, and task status.
+2.  **The Dashboard:** Launch the Electron app for the full multi-process monitor.
+
+---
+
+## 3. The "Designer" Workflow (Vision Mode) 🎨
+
+**Trigger:** Add the **`[UI]`** tag to a task in `plan.md`.
+
+### Behavior
+1.  **Execution:** Agent writes CSS/React code.
+2.  **Vision Loop:**
+    *   Launches Playwright headless.
+    *   Captures a full-page screenshot to `.ralph/screenshots/`.
+    *   Calls the **Vision Model** (`gemini-2.0-flash-exp`) to compare the render against the task description.
+3.  **Judgment:** Only commits if the visual review results in a `PASS`.
+
+---
+
+## 4. Setup & Operations
+
+### Prerequisites
+*   Node.js v20+, Python 3.10+, Git, Playwright (`playwright install`).
+
+### Commands
+| Goal | Command |
+| :--- | :--- |
+| **Start Everything** | `npm start` |
+| **Inject Brain** | `python upgrade_ralph.py` |
+| **Hydrate Env** | `pip install -r requirements.txt` |
+| **Legacy Tools** | `npm run legacy -- <args>` |
+
+---
+
+## 5. System Architecture for Builders 🧬
+
+### File Tree
+*   **`coordinator/`**: The Python Core.
+    *   `llm.py`: API Client (Text/Vision) + Budget tracking. (Alias: `see_and_critique`).
+    *   `loop.py`: Micro-Ratchet Engine & Hat Selection (TDD + Ambiguity Traps).
+    *   `safety.py`: The Referee & IDE Badge generator.
+    *   `state.py`: Plan parser & Architect Phase logic (Alias: `initialize_from_intent`).
+*   **`templates/roles/`**: Markdown-based system prompts for Personas.
+*   **`PRD.md` / `ARCHITECTURE.md`**: Derived sources of truth.
+
+### Data Flow
+`User Intent` → `Architect` → `plan.md` → `Developer/Designer` → `Referee (Tests/Vision)` → `Git Commit` → `IDE Badge/Dashboard`.
+
+---
+*"Ship working code while you sleep."*

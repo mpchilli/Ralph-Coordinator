@@ -154,3 +154,13 @@ class PlanManager:
         os.makedirs(os.path.dirname(dashboard_path), exist_ok=True)
         with open(dashboard_path, "w", encoding="utf-8") as f:
             json.dump(status, f, indent=2)
+
+    def initialize_from_intent(self, user_prompt):
+        """Alias for initialize_project to match Architect's spec."""
+        return self.initialize_project(user_prompt)
+
+    def update_ide_badge(self, status):
+        """Wrapper for Referee.update_badge to match Architect's spec."""
+        # Note: This is a convenience wrapper; typically loop.py calls referee directly.
+        from .safety import Referee
+        Referee().update_badge(status)

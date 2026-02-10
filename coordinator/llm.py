@@ -151,3 +151,10 @@ def generate_vision(prompt, image_path):
     _check_budget()
 
     return response.text
+
+
+def see_and_critique(image_path, instruction):
+    """
+    Alias for generate_vision to match Architect's spec.
+    """
+    return generate_vision(instruction, image_path)
