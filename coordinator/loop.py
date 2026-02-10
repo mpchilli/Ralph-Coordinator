@@ -5,10 +5,13 @@ from .safety import Referee
 from .state import PlanManager
 from .llm import generate, see_and_critique
 
+from .tools import Toolbelt
+
 class MicroRatchet:
     def __init__(self):
         self.referee = Referee(["git", "npm", "node", "python", "ls", "echo", "npx"])
         self.state = PlanManager()
+        self.tools = Toolbelt()
 
     def run_cycle(self, task_id):
         # 1. Lock
@@ -38,9 +41,21 @@ class MicroRatchet:
             context = f"Current Plan:\n{plan}\n\nCurrent Task: {task_id}"
             print(f"🤖 Generating code for {task_id} as {role}...")
             
-            # (Real Logic: In a full implementation, we would parse file edits here. 
-            # For this v1, we assume the LLM outputs a shell command to write the file)
-            action = generate(f"{context}\nWrite the code for this task. {prompt_suffix}", role=role)
+            # INSTRUCTION INJECTION: Tell LLM how to format files
+            system_instruction = (
+                "You are a coding agent. "
+                "To save files, you MUST use this format:\n"
+                "### FILE: src/filename.js\n"
+                "```javascript\ncode\n```"
+            )
+            
+            action = generate(f"{system_instruction}\n{context}\nWrite the code.{prompt_suffix}", role=role)
+            
+            # 4.5 ACTUATION (The Fix)
+            print("💾 Applying Code Changes...")
+            written_files = self.tools.apply_code_changes(action)
+            if not written_files:
+                print("⚠️ No files were written! Checking output...")
             
             # 5. Verify (The Captain)
             self.state.update_badge(task_id, "VERIFYING")
