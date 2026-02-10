@@ -221,9 +221,13 @@ export class LoopsManager extends EventEmitter {
    */
   private runRalphCommand(args: string[]): Promise<string> {
     return new Promise((resolve, reject) => {
-      const proc = spawn(this.ralphPath, args, {
+      // On Windows, .cmd files require shell: true to execute via spawn()
+      // We also need to quote the path to handle spaces in directory names
+      const command = process.platform === "win32" ? `"${this.ralphPath}"` : this.ralphPath;
+      const proc = spawn(command, args, {
         stdio: ["ignore", "pipe", "pipe"],
         ...(this.workspaceRoot ? { cwd: this.workspaceRoot } : {}),
+        ...(process.platform === "win32" ? { shell: true } : {}),
       });
 
       let stdout = "";

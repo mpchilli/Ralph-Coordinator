@@ -1,0 +1,9 @@
+system:
+  mode: "hybrid"
+  budget_max_usd: 5.00
+models:
+  planner: "gemini-2.0-pro-exp-02-05"
+  executor: "gemini-2.5-flash-preview-09-25"
+  vision: "gemini-2.0-flash-exp" # For Designer Hat
+security:
+  allowlist: ["git", "npm", "node", "python", "ls", "echo", "mkdir", "npx"]

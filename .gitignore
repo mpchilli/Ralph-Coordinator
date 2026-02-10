@@ -79,6 +79,7 @@ pbcopy
 .claude/*.local.md
 .kiro/
 .envrc
+.env
 
 # Playwright screenshots
 .playwright-mcp/

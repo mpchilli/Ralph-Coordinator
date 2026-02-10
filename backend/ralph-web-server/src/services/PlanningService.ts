@@ -334,13 +334,16 @@ export class PlanningService {
 
     console.log(`[PlanningService] Spawning ralph for session ${sessionId}:`, this.ralphPath, args.join(" "));
 
-    const ralphProcess = spawn(this.ralphPath, args, {
+    // On Windows, .cmd files require shell: true and quoted paths for spaces
+    const command = process.platform === "win32" ? `"${this.ralphPath}"` : this.ralphPath;
+    const ralphProcess = spawn(command, args, {
       cwd: this.workspaceRoot,
       stdio: ["ignore", "pipe", "pipe"],
       env: {
         ...process.env,
         RALPH_PLANNING_SESSION_ID: sessionId,
       },
+      ...(process.platform === "win32" ? { shell: true } : {}),
     });
 
     // Track the process

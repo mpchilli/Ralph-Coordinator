@@ -113,10 +113,15 @@ const taskBridge = new TaskBridge(taskRepository, taskQueue, eventBus, {
 (globalThis as Record<string, unknown>).__taskQueue = taskQueue;
 (globalThis as Record<string, unknown>).__dispatcher = dispatcher;
 
+// Resolve path to ralph CLI wrapper (Python bridge)
+// On Windows, ralph.cmd calls python coordinator/bridge.py
+const RALPH_CLI_PATH = path.resolve(REPO_ROOT, "ralph.cmd");
+
 // Create LoopsManager for periodic merge queue processing
 // This handles git merge conflicts when multiple worktree loops complete in parallel
 const loopsManager = new LoopsManager({
   processIntervalMs: loopsProcessIntervalMs,
+  ralphPath: RALPH_CLI_PATH,
   workspaceRoot: CWD,
 });
 
@@ -129,7 +134,7 @@ const loopsManager = new LoopsManager({
 // not relative to the web server directory.
 const planningService = new PlanningService({
   workspaceRoot: REPO_ROOT,
-  ralphPath: "ralph",
+  ralphPath: RALPH_CLI_PATH,
   defaultTimeoutSeconds: 300,
 });
 

@@ -1,0 +1,4 @@
+google-generativeai
+playwright
+pyyaml
+colorama

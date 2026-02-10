@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "private": true,
   "description": "AI agent orchestrator with web dashboard",
+  "main": "electron/main.js",
   "workspaces": [
     "backend/*",
     "frontend/*"
@@ -14,6 +15,7 @@
     "dev": "npm run dev --workspaces --if-present",
     "dev:server": "npm run dev -w @ralph-web/server",
     "dev:web": "npm run dev -w @ralph-web/dashboard",
+    "electron:dev": "electron .",
     "start": "npm run start -w @ralph-web/server",
     "test": "npm run test --workspaces --if-present",
     "test:server": "npm run test -w @ralph-web/server",
@@ -30,5 +32,8 @@
     "ralph"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^40.2.1"
+  }
 }
